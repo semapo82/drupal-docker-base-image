@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+
+set -eo pipefail
+
+if [[ -n "${DEBUG}" ]]; then
+  set -x
+fi
+
+chown "${APACHE_RUN_USER}":"${APACHE_RUN_GROUP}" "${APP_ROOT}"
+
+declare -a dirs=(
+  "${FILES_DIR}"
+  "${FILES_DIR}/sessions"
+  "${FILES_DIR}/xdebug"
+)
+
+if [[ -n $1 && $1 =~ ^"${FILES_DIR}/" ]]; then
+  dirs+=($1)
+fi
+
+for dir in "${dirs[@]}"; do
+  mkdir -p "${dir}"
+  chown "${APACHE_RUN_USER}":"${APACHE_RUN_GROUP}" "${dir}"
+  chmod 775 "${dir}"
+done

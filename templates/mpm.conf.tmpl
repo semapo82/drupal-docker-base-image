@@ -1,0 +1,68 @@
+#
+# Server-Pool Management (MPM specific)
+#
+#
+# Only one of the below sections will be relevant on your
+# installed httpd.  Use "apachectl -l" to find out the
+# active mpm.
+#
+
+# prefork MPM
+<IfModule mpm_prefork_module>
+    StartServers {{ getenv "APACHE_MPM_START_SERVERS" "3" }}
+    MinSpareServers {{ getenv "APACHE_MPM_MIN_SPARE_SERVERS" "5" }}
+    MaxSpareServers {{ getenv "APACHE_MPM_MAX_SPARE_SERVERS" "10" }}
+    MaxRequestWorkers {{ getenv "APACHE_MPM_MAX_REQUEST_WORKERS" "250" }}
+    MaxConnectionsPerChild {{ getenv "APACHE_MPM_MAX_CONNECTIONS_PER_CHILD" "0" }}
+</IfModule>
+
+# worker MPM
+<IfModule mpm_worker_module>
+    StartServers {{ getenv "APACHE_MPM_START_SERVERS" "3" }}
+    MinSpareThreads {{ getenv "APACHE_MPM_MIN_SPARE_THREADS" "75" }}
+    MaxSpareThreads {{ getenv "APACHE_MPM_MAX_SPARE_THREADS" "250" }}
+    ThreadsPerChild {{ getenv "APACHE_MPM_THREADS_PER_CHILD" "25" }}
+    MaxRequestWorkers {{ getenv "APACHE_MPM_MAX_REQUEST_WORKERS" "400" }}
+    MaxConnectionsPerChild {{ getenv "APACHE_MPM_MAX_CONNECTIONS_PER_CHILD" "0" }}
+</IfModule>
+
+# event MPM
+<IfModule mpm_event_module>
+    StartServers {{ getenv "APACHE_MPM_START_SERVERS" "3" }}
+    ServerLimit {{ getenv "APACHE_MPM_SERVER_LIMIT" "16" }}
+    MinSpareThreads {{ getenv "APACHE_MPM_MIN_SPARE_THREADS" "75" }}
+    MaxSpareThreads {{ getenv "APACHE_MPM_MAX_SPARE_THREADS" "250" }}
+    ThreadsPerChild {{ getenv "APACHE_MPM_THREADS_PER_CHILD" "25" }}
+    MaxRequestWorkers {{ getenv "APACHE_MPM_MAX_REQUEST_WORKERS" "400" }}
+    MaxConnectionsPerChild {{ getenv "APACHE_MPM_MAX_CONNECTIONS_PER_CHILD" "0" }}
+</IfModule>
+
+# NetWare MPM
+<IfModule !mpm_netware_module>
+    MaxMemFree {{ getenv "APACHE_MPM_MAX_FREE_MEM" "2048" }}
+</IfModule>
+<IfModule mpm_netware_module>
+    ThreadStackSize {{ getenv "APACHE_MPM_THREAD_STACK_SIZE" "65536" }}
+    StartThreads {{ getenv "APACHE_MPM_START_THREADS" "250" }}
+    MinSpareThreads {{ getenv "APACHE_MPM_MIN_SPARE_THREADS" "25" }}
+    MaxSpareThreads {{ getenv "APACHE_MPM_MAX_SPARE_THREADS" "250" }}
+    MaxThreads {{ getenv "APACHE_MPM_MAX_THREADS" "1000" }}
+    MaxConnectionsPerChild {{ getenv "APACHE_MPM_MAX_CONNECTIONS_PER_CHILD" "0" }}
+    MaxMemFree {{ getenv "APACHE_MPM_MAX_FREE_MEM" "100" }}
+</IfModule>
+
+# OS/2 MPM
+<IfModule mpm_mpmt_os2_module>
+    StartServers {{ getenv "APACHE_MPM_START_SERVERS" "2" }}
+    MinSpareThreads {{ getenv "APACHE_MPM_MIN_SPARE_THREADS" "5" }}
+    MaxSpareThreads {{ getenv "APACHE_MPM_MAX_SPARE_THREADS" "10" }}
+    MaxConnectionsPerChild {{ getenv "APACHE_MPM_MAX_CONNECTIONS_PER_CHILD" "0" }}
+</IfModule>
+
+# WinNT MPMe server process
+<IfModule mpm_winnt_module>
+    ThreadsPerChild {{ getenv "APACHE_MPM_THREADS_PER_CHILD" "150" }}
+    MaxConnectionsPerChild {{ getenv "APACHE_MPM_MAX_CONNECTIONS_PER_CHILD" "0" }}
+</IfModule>
+
+# vim: syntax=apache ts=4 sw=4 sts=4 sr noet

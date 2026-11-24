@@ -1,0 +1,68 @@
+# Hello world!
+<VirtualHost *:{{ getenv "APACHE_PORT" "8080" }}>
+    <Directory />
+        Options FollowSymLinks
+        AllowOverride None
+        Require all denied
+    </Directory>
+
+    DocumentRoot "{{ getenv "APACHE_DOCUMENT_ROOT" "/var/www/html" }}"
+    ServerName {{ getenv "APACHE_SERVER_NAME" "default" }}
+    # Multiple DirectoryIndex directives within the same context will add
+    # to the list of resources to look for rather than replace
+    # https://httpd.apache.org/docs/current/mod/mod_dir.html#directoryindex
+    DirectoryIndex disabled
+    DirectoryIndex {{ getenv "APACHE_DIRECTORY_INDEX" "index.php" }}
+
+    <Directory "{{ getenv "APACHE_DOCUMENT_ROOT" "/var/www/html" }}">
+        Options FollowSymLinks {{ if (getenv "APACHE_INDEXES_ENABLED") }}Indexes{{ end }}
+        AllowOverride {{ getenv "APACHE_ALLOW_OVERRIDE_ENABLED" "All" }}
+        Require all granted
+    </Directory>
+    {{ if not (getenv "APACHE_LIMITED_ACCESS") }}
+    <Location />
+        Require all granted
+    </Location>
+    {{ end }}
+
+    <FilesMatch "^\.">
+        Require all denied
+    </FilesMatch>
+
+    <Files ".ht*">
+        Require all denied
+    </Files>
+
+    <FilesMatch "^\.ht">
+        Require all denied
+    </FilesMatch>
+
+    <FilesMatch "\.(?:sh|sql|mysql|po|tpl|make|test)$">
+        Require all denied
+    </FilesMatch>
+
+    <FilesMatch "^Makefile">
+        Require all denied
+    </FilesMatch>
+
+    <DirectoryMatch "^\.|\/\.">
+        Require all denied
+    </DirectoryMatch>
+
+    <FilesMatch "(.txt$|.TXT$)">
+        Require all denied
+    </FilesMatch>
+
+    <FilesMatch "^(robots\.txt|robots\.TXT)$">
+        Require all granted
+    </FilesMatch>
+
+    {{ if getenv "APACHE_HTTP2" }}
+    Protocols h2c http/1.1
+    {{ end }}
+
+    SetEnvIf Request_URI "^/\.healthz$" dontlog
+    RedirectMatch 204 .healthz
+</VirtualHost>
+
+# vim: syntax=apache ts=4 sw=4 sts=4 sr noet
